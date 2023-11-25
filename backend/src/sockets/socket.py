@@ -12,17 +12,13 @@ router = APIRouter(prefix="/ws", tags=["WebSockets"], responses={404: {"descript
 
 @router.websocket("/{room_id}")
 async def audio_websocket_endpoint(
-        uow: UOWDep,
-        websocket: WebSocket,
-        room_id: int,
-        token: str,
-        db: AsyncSession = Depends(get_db)
+    uow: UOWDep, websocket: WebSocket, room_id: int, token: str, db: AsyncSession = Depends(get_db)
 ):
     user = await get_current_user(token, db)
     manager = audio_managers[room_id]
     await manager.connect(websocket, user)
     if room_id not in audio_managers:
-        await manager.send_message('Комнаты с таким id не существует')
+        await manager.send_message("Комнаты с таким id не существует")
         manager.disconnect(websocket, user)
     try:
         while True:
@@ -36,12 +32,6 @@ async def audio_websocket_endpoint(
 
             if user_in_room.is_leader:
                 if manager.active_connections:
-                    await uow.users_rooms.edit_one(
-                        user_id=manager.active_connections[0].user,
-                        data={'is_leader': True}
-                    )
+                    await uow.users_rooms.edit_one(user_id=manager.active_connections[0].user, data={"is_leader": True})
                 else:
                     await uow.rooms.delete_one(id=room_id)
-
-
-

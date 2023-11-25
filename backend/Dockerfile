@@ -13,4 +13,4 @@ COPY . .
 
 RUN poetry install --with dev
 
-RUN chmod a+x docker/*.sh
+CMD uvicorn src.main:app --host 0.0.0.0 --port 9999

@@ -1,3 +1,3 @@
 from . import socket
 
-sockets_routers = (socket.router, )
+sockets_routers = (socket.router,)

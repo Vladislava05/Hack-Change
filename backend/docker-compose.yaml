@@ -12,7 +12,7 @@ services:
     expose:
       - 5431
     env_file:
-      - .env-non-dev
+      - .env-docker-compose
     environment:
       POSTGRES_PASSWORD: "S1DjDkl2daW"
 
@@ -20,13 +20,13 @@ services:
     build:
       context: .
     container_name: application
-    env_file:
-      - .env-non-dev
     ports:
-      - 9999:8000
+      - 9999:9999
     depends_on:
       - database
-    command: ['/app/docker/app.sh']
+    env_file:
+      - .env-docker-compose
+
 
 volumes:
   pgdata:

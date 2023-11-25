@@ -33,13 +33,13 @@ async def get_token(uow: IUnitOfWork, data: OAuth2PasswordRequestForm):
 
 async def get_refresh_token(uow: IUnitOfWork, token):
     payload = get_token_payload(token=token)
-    user_id: int | None = payload.get("id", None)
-    if not user_id:
+    if not payload:
         raise HTTPException(
             status_code=401,
             detail="Invalid refresh token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    user_id: int = payload.get("id")
     async with uow:
         user = await uow.users.find_one(id=user_id)
         return await _get_user_token(user=user, refresh_token=token)
