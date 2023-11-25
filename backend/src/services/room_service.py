@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 
 from src.models.users import Users
 from src.schemas.room import UsersRoomsAdd, UsersIdScheme
+from src.storage import create_manager_room, delete_manager_room
 from src.utils.dependencies import UOWDep
 
 
@@ -34,6 +35,7 @@ async def add_room(uow: UOWDep, user: Users):
         await check_user_in_room(uow, user.id)
         room = await uow.rooms.add_one({})
         await uow.users_rooms.add_one({"room_id": room.id, "user_id": user.id, "is_leader": True})
+        create_manager_room(room.id)
         return room.to_read_model()
 
 
@@ -41,6 +43,7 @@ async def delete_room(uow: UOWDep, room_id: int, user: Users):
     async with uow:
         await is_leader(uow, user.id)
         await uow.rooms.delete_one(id=room_id)
+        delete_manager_room(room_id)
 
 
 async def add_user_room(uow: UOWDep, data: UsersRoomsAdd, user: Users):
